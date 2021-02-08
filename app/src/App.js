@@ -13,15 +13,17 @@ function App() {
     const fetchApi = async () => {
       const imagesOnPage = 30
       const key = '20207494-b463ec48faf99f1ad0e64ff2b'
-      const url = `https://pixabay.com/api/?key=${key}&q=${search}&per_page=${imagesOnPage}`
+      const url = `https://pixabay.com/api/?key=${key}&q=${search}&per_page=${imagesOnPage}&page=${currentpage}`
       const response = await fetch(url)
       const result = await response.json()
       setImages(result.hits)
       const AmountOfPages = Math.ceil(result.totalHits / imagesOnPage)
       setTotalPages(AmountOfPages)
+      const jumbotron = document.querySelector('.jumbotron')  //  Move to the top of the page every time you have a other images
+      jumbotron.scrollIntoView({ behavior: "smooth" })
     }
     fetchApi()
-  }, [search])
+  }, [search, currentpage])
 
   const previousPage = (e) => {
     const newCurrentPage = currentpage - 1
@@ -47,16 +49,20 @@ function App() {
         <ImagesList
           images={images}
         />
-        <button
-          type='button'
-          className='bbtn btn-info mr-1'
-          onClick={e => previousPage(e)}
-        >&laquo; Previous</button>
-        <button
-          type='button'
-          className="bbtn btn-info"
-          onClick={e => nextPage(e)}
-        >Next &raquo;</button>
+        {(currentpage !== 1) && (
+          <button
+            type='button'
+            className='bbtn btn-info mr-1'
+            onClick={e => previousPage(e)}
+          >&laquo; Previous</button>
+        )}
+        {(currentpage !== totalpages) && (
+          <button
+            type='button'
+            className="bbtn btn-info"
+            onClick={e => nextPage(e)}
+          >Next &raquo;</button>
+        )}
       </div>
     </div>
   );
