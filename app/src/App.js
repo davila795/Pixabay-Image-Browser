@@ -5,6 +5,9 @@ import ImagesList from "./components/ImagesList";
 function App() {
   const [search, setSearch] = useState('')
   const [images, setImages] = useState([])
+  const [currentpage, setCurrentPage] = useState(1)
+  const [totalpages, setTotalPages] = useState(1)
+
   useEffect(() => {
     if (search === '') return
     const fetchApi = async () => {
@@ -14,9 +17,23 @@ function App() {
       const response = await fetch(url)
       const result = await response.json()
       setImages(result.hits)
+      const AmountOfPages = Math.ceil(result.totalHits / imagesOnPage)
+      setTotalPages(AmountOfPages)
     }
     fetchApi()
   }, [search])
+
+  const previousPage = (e) => {
+    const newCurrentPage = currentpage - 1
+    if (newCurrentPage < 1) return
+    setCurrentPage(newCurrentPage)
+  }
+
+  const nextPage = (e) => {
+    const newCurrentPage = currentpage + 1
+    if (newCurrentPage > totalpages) return
+    setCurrentPage(newCurrentPage)
+  }
 
   return (
     <div className="container">
@@ -30,6 +47,16 @@ function App() {
         <ImagesList
           images={images}
         />
+        <button
+          type='button'
+          className='bbtn btn-info mr-1'
+          onClick={e => previousPage(e)}
+        >&laquo; Previous</button>
+        <button
+          type='button'
+          className="bbtn btn-info"
+          onClick={e => nextPage(e)}
+        >Next &raquo;</button>
       </div>
     </div>
   );
